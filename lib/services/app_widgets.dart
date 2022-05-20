@@ -16,29 +16,45 @@ appSnackBar(BuildContext context, String message){
   );
 }
 
-showLoaderDialog(BuildContext context, text) {
-  AlertDialog alert = AlertDialog(
-    content: Row(
+// showLoaderDialog(BuildContext context, text) {
+//   AlertDialog alert = AlertDialog(
+//     content: Row(
+//       children: [
+//         const CircularProgressIndicator(),
+//         Container(
+//             margin: EdgeInsets.only(left: 15), child: Text(text)),
+//       ],
+//     ),
+//   );
+//   showDialog(
+//     barrierDismissible: false,
+//     context: context,
+//     builder: (BuildContext context) {
+//       Future.delayed(Duration(milliseconds: 1800), () {
+//         Navigator.of(context).pop(true);
+//       });
+//       return alert;
+//     },
+//   );
+// }
+
+showLoaderDialog(BuildContext context){
+  AlertDialog alert=AlertDialog(
+    content: new Row(
       children: [
-        const CircularProgressIndicator(),
-        Container(
-            margin: EdgeInsets.only(left: 15), child: Text(text)),
-      ],
-    ),
+        CircularProgressIndicator(),
+        Container(margin: EdgeInsets.only(left: 7),child:Text("Loading..." )),
+      ],),
   );
-  showDialog(
-    barrierDismissible: false,
-    context: context,
-    builder: (BuildContext context) {
-      Future.delayed(Duration(milliseconds: 1800), () {
-        Navigator.of(context).pop(true);
-      });
+  showDialog(barrierDismissible: false,
+    context:context,
+    builder:(BuildContext context){
       return alert;
     },
   );
 }
 
-inputText(controller, message, hintText){
+inputText(controller, message, hintText, {prefixIcon, suffixIcon, obscureText, labelText}){
   return TextFormField(
     controller: controller,
     validator: (v){
@@ -52,15 +68,18 @@ inputText(controller, message, hintText){
     style: const TextStyle(fontSize: 12),
     keyboardType: TextInputType.emailAddress,
     textAlignVertical: TextAlignVertical.center,
+    obscureText: obscureText ?? false,
     decoration: InputDecoration(
         hintText: '$hintText',
+        labelText: '$labelText',
         border: InputBorder.none,
         filled: true,
         fillColor: AppColors.secondaryColor,
         prefixIcon: Icon(
-          Icons.email_outlined,
+          prefixIcon,
           size: 18,
         ),
+        suffixIcon: suffixIcon ?? null,
         hintStyle: TextStyle(fontSize: 12)),
   );
 }

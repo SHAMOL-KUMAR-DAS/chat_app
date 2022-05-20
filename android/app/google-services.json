@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "354035289343",
+    "project_id": "chatty-9bb23",
+    "storage_bucket": "chatty-9bb23.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:354035289343:android:ad5b5111ca00ac03fe50ca",
+        "android_client_info": {
+          "package_name": "com.shamol.chatty"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "354035289343-6vq2m0aijlg6lgh457qt6qetpirmu6ut.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.shamol.chatty",
+            "certificate_hash": "cab462cce2627736529c2146b9f3e213ac9fe95a"
+          }
+        },
+        {
+          "client_id": "354035289343-uqrm9snfb76l9r4mgiprvb77m9c0ieim.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCWniRAkmSE2KB9tPvyigvAOZoKYxk8vU0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "354035289343-uqrm9snfb76l9r4mgiprvb77m9c0ieim.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,4 +1,4 @@
-package com.shamol.impel
+package com.shamol.chatty
 
 import io.flutter.embedding.android.FlutterActivity
 

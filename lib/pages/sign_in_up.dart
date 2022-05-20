@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'package:impel/services/app_colors.dart';
 import 'package:impel/services/app_widgets.dart';
+import 'package:impel/test.dart';
 import 'package:lottie/lottie.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 
 class SignInUp extends StatefulWidget {
@@ -42,6 +44,26 @@ class _SignInUpState extends State<SignInUp> {
     });
   }
 
+  Future<void> SignIn() async {
+    final formstate = formKey.currentState;
+    if (formstate!.validate()) {
+      formstate.save();
+      try {
+        final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email.text, password: password.text);
+        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => Testing()), (route) => false);
+        appSnackBar(context, 'Success Login');
+
+      }on FirebaseAuthException catch (e) {
+        print(e.code);
+        if (e.code == 'user-not-found') {
+          appSnackBar(context, 'No User Found');
+        } else if (e.code == 'wrong-password') {
+          appSnackBar(context, 'Please Enter Correct Password');
+        }
+      }
+    }
+  }
+
   @override
   void dispose() {
     _streamSubscription.cancel();
@@ -77,7 +99,7 @@ class _SignInUpState extends State<SignInUp> {
             ),
             Image.asset(
               'assets/images/logo.png',
-              height: 100,
+              height: 150,
             ),
             const SizedBox(
               height: 20,
@@ -98,23 +120,21 @@ class _SignInUpState extends State<SignInUp> {
               child: Column(
                 children: [
                   //for email address
-                  inputText(email, 'EMAIL', 'Enter Your Email'),
+                  inputText(email, 'Email', 'ENTER YOUR EMAIL', prefixIcon: Icons.email_outlined, labelText: 'EMAIL'),
 
                   const SizedBox(height: 20,),
 
                   //for password
-                  inputText(password, 'PASSWORD', 'Enter Your Password'),
+                  inputText(password, 'Password', 'ENTER YOUR PASSWORD', prefixIcon: Icons.lock_outline, suffixIcon: InkWell(
+                    onTap: viewPass,
+                    child: _hideText
+                        ? Icon(Icons.visibility_off)
+                        : Icon(Icons.visibility),
+                  ), obscureText: _hideText, labelText: 'PASSWORD'),
                 ],
               ),
             ),
-            const SizedBox(
-              height: 5,
-            ),
 
-            Text(
-              'Forgot Password?',
-              style: TextStyle(color: AppColors.primaryColor, fontSize: 12),textAlign: TextAlign.right,
-            ),
             const SizedBox(
               height: 40,
             ),
@@ -123,13 +143,8 @@ class _SignInUpState extends State<SignInUp> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 25),
               child: button(context, text: 'LOGIN',press: (){
-                //showLoaderDialog(context);
-                if(formKey.currentState!.validate()){
-
-                  appSnackBar(context, 'Success');
-                }else{
-                  print('object: fail');
-                }
+                showLoaderDialog(context);
+                SignIn();
               })
 
             ),
