@@ -1,60 +1,55 @@
-// import 'package:flutter/material.dart';
-// import 'package:google_fonts/google_fonts.dart';
-// import 'package:impel/services/app_colors.dart';
-//
-// class AppTextStyles {
-//   static TextStyle inputStyle(
-//       double size, {
-//         FontWeight fontWeight = FontWeight.w400,
-//       }) =>
-//       GoogleFonts.roboto(
-//         color: AppColors.primaryColor,
-//         fontSize: size,
-//         fontWeight: fontWeight,
-//       );
-//   static TextStyle textButtonStyle(
-//       double size, {
-//         FontWeight fontWeight = FontWeight.w600,
-//       }) =>
-//       GoogleFonts.roboto(
-//         color: AppColors.primaryColor,
-//         fontSize: size,
-//         fontWeight: fontWeight,
-//       );
-//   static TextStyle roundedButtonStyle(
-//       double size, {
-//         FontWeight fontWeight = FontWeight.w400,
-//       }) =>
-//       GoogleFonts.roboto(
-//         color: AppColors.white,
-//         fontSize: size,
-//         fontWeight: fontWeight,
-//       );
-//   static TextStyle body(
-//       double size, {
-//         FontWeight fontWeight = FontWeight.w400,
-//       }) =>
-//       GoogleFonts.roboto(
-//         color: AppColors.black,
-//         fontSize: size,
-//         fontWeight: fontWeight,
-//       );
-//   static TextStyle title(
-//       double size, {
-//         FontWeight fontWeight = FontWeight.w600,
-//       }) =>
-//       GoogleFonts.roboto(
-//         color: AppColors.primaryColor,
-//         fontSize: size,
-//         fontWeight: fontWeight,
-//       );
-//   static TextStyle drawerTile(
-//       double size, {
-//         FontWeight fontWeight = FontWeight.w600,
-//       }) =>
-//       GoogleFonts.roboto(
-//         color: AppColors.black.withOpacity(0.54),
-//         fontSize: size,
-//         fontWeight: fontWeight,
-//       );
-// }
+//For Google Signing In
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:impel/model/database.dart';
+import 'package:impel/model/sharedpref_helper.dart';
+import 'package:impel/pages/all_users.dart';
+import 'package:random_string/random_string.dart';
+
+class AuthMethods{
+  final FirebaseAuth auth = FirebaseAuth.instance;
+
+  getCurrentUser(){
+    return auth.currentUser != null ? auth.currentUser : null;
+  }
+
+  signInWithGoogle(BuildContext context) async{
+    final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+    final GoogleSignIn _googleSignIn = GoogleSignIn();
+
+    final GoogleSignInAccount? _googleSignInAccount = await _googleSignIn.signIn();
+
+    final GoogleSignInAuthentication _googleSignInAuthentication = await _googleSignInAccount!.authentication;
+
+    final AuthCredential credential = GoogleAuthProvider.credential(
+        idToken: _googleSignInAuthentication.idToken,
+        accessToken: _googleSignInAuthentication.accessToken);
+
+    final result  = await _firebaseAuth.signInWithCredential(
+        credential);
+    final userDetails = result.user;
+
+    if(result != null){
+      SharedPreferenceHelper().saveUserEmail(userDetails!.email.toString());
+      SharedPreferenceHelper().saveUserID(userDetails.uid);
+      SharedPreferenceHelper().saveUserName(userDetails.displayName.toString());
+      SharedPreferenceHelper().saveUserProfilePic(userDetails.photoURL.toString());
+      SharedPreferenceHelper().saveUserMobile(userDetails.phoneNumber.toString());
+
+      Map<String, dynamic> userInfoMap = {
+        "First_Name": userDetails.displayName,
+        "Mobile": userDetails.phoneNumber,
+        "E-Mail": userDetails.email,
+        "User_Name": userDetails.email.toString().replaceAll("@gmail.com", ""),
+        "Image": userDetails.photoURL
+      };
+
+      //After Google sign in which page visible
+      DatabaseMethods().addUserInfo(userDetails.uid, userInfoMap).then((value) {
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>All_Users()));
+      });
+    }
+  }
+}

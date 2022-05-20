@@ -1,11 +1,13 @@
 import 'dart:async';
+import 'package:impel/pages/all_users.dart';
 import 'package:impel/services/app_colors.dart';
+import 'package:impel/services/app_text_style.dart';
 import 'package:impel/services/app_widgets.dart';
-import 'package:impel/test.dart';
 import 'package:lottie/lottie.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_signin_button/flutter_signin_button.dart';
 
 
 class SignInUp extends StatefulWidget {
@@ -36,7 +38,6 @@ class _SignInUpState extends State<SignInUp> {
         setState(() {
           status = true;
         });
-
       } else {
         status = false;
       }
@@ -49,16 +50,41 @@ class _SignInUpState extends State<SignInUp> {
     if (formstate!.validate()) {
       formstate.save();
       try {
+        showLoaderDialog(context);
         final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email.text, password: password.text);
-        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => Testing()), (route) => false);
+        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => All_Users()), (route) => false);
         appSnackBar(context, 'Success Login');
-
       }on FirebaseAuthException catch (e) {
         print(e.code);
         if (e.code == 'user-not-found') {
           appSnackBar(context, 'No User Found');
         } else if (e.code == 'wrong-password') {
           appSnackBar(context, 'Please Enter Correct Password');
+        }
+      }
+    }
+  }
+
+  Future<void> SignUp()async{
+    final cformkey = formKey.currentState;
+    if(cformkey!.validate()){
+      cformkey.save();
+      try {
+          var newuser = await FirebaseAuth.instance
+              .createUserWithEmailAndPassword(
+              email: email.text, password: password.text);
+
+          //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>OTPVerification(_emailController.text)));
+
+      } on FirebaseAuthException catch(e){
+        print(e.message);
+        if(e.message == 'The email address is already in use by another account.'){
+          showDialog(context: context, builder: (BuildContext context) {
+            return new AlertDialog(
+              title: new Text("The E-Mail Address is Already in Use"),
+            );
+          }
+          );
         }
       }
     }
@@ -84,18 +110,17 @@ class _SignInUpState extends State<SignInUp> {
   @override
   Widget build(BuildContext context) {
     return status ? Scaffold (
-
       body: Container(
         padding: EdgeInsets.only(left: 15, right: 15, bottom: 15),
         child: _isContainerVisible ?
-        SignUp(_isContainerVisible)
+        Sign_Up(context, _isContainerVisible)
             :
         ListView(
           padding: const EdgeInsets.all(20),
           physics: const BouncingScrollPhysics(),
           children: [
             SizedBox(
-              height: MediaQuery.of(context).size.height / 10,
+              height: MediaQuery.of(context).size.height * 0.05,
             ),
             Image.asset(
               'assets/images/logo.png',
@@ -112,7 +137,7 @@ class _SignInUpState extends State<SignInUp> {
               'Please sign in to continue',
               style: TextStyle(fontSize: 15, color: AppColors.grey),
             ),
-            const SizedBox(height: 40,),
+            const SizedBox(height: 25,),
 
             //for user input
             Form(
@@ -140,31 +165,21 @@ class _SignInUpState extends State<SignInUp> {
             ),
 
             //for button
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 25),
-              child: button(context, text: 'LOGIN',press: (){
-                showLoaderDialog(context);
-                SignIn();
-              })
-
-            ),
+            button(context, text: 'LOGIN',press: (){
+              _isContainerVisible ? SignUp() : SignIn();
+            }),
 
             const SizedBox(
-              height: 40,
+              height: 10,
             ),
 
-            // GestureDetector(
-            //   onTap: (){
-            //     setState(() {
-            //       _isContainerVisible = !_isContainerVisible;
-            //     });
-            //   },
-            //   child: const Center(
-            //       child: Text(
-            //         'Don\'t Have Account? Create Account',
-            //         style: TextStyle(color: AppColors.primaryColor, fontSize: 12),
-            //       )),
-            // ),
+            Container(
+              child: SignInButton(
+                  Buttons.Google,
+                  onPressed: () {
+                    AuthMethods().signInWithGoogle(context);
+                  }),
+            ),
 
             SizedBox(
               height: MediaQuery.of(context).size.height / 10,
@@ -177,6 +192,7 @@ class _SignInUpState extends State<SignInUp> {
       Padding(
         padding: const EdgeInsets.only(bottom: 20, left: 250),
         child: FloatingActionButton(
+          mini: true,
           backgroundColor: Colors.green,
           onPressed: () {
             setState(() {
@@ -185,7 +201,7 @@ class _SignInUpState extends State<SignInUp> {
           },
           child: Icon(
             Icons.done,
-            size: 35,
+            size: 25,
           ),
         ),
       )
@@ -193,6 +209,7 @@ class _SignInUpState extends State<SignInUp> {
       Padding(
         padding: const EdgeInsets.only(bottom: 20),
         child: FloatingActionButton(
+          mini: true,
           backgroundColor: AppColors.primaryColor,
           onPressed: () {
             setState(() {
@@ -201,7 +218,7 @@ class _SignInUpState extends State<SignInUp> {
           },
           child: Icon(
             Icons.add,
-            size: 35,
+            size: 25,
           ),
         ),
       ),
@@ -232,16 +249,7 @@ class _SignInUpState extends State<SignInUp> {
   }
 }
 
-class SignUp extends StatefulWidget {
-  SignUp(this._isContainerVisible);
-  bool _isContainerVisible;
-
-  @override
-  State<SignUp> createState() => _SignUpState();
-}
-
-class _SignUpState extends State<SignUp> {
-
+Widget Sign_Up(BuildContext context, _isContainerVisible) {
   var courseTitle     = TextEditingController();
   var courseTopic     = TextEditingController();
   var nameOfOrganize  = TextEditingController();
@@ -249,47 +257,44 @@ class _SignUpState extends State<SignUp> {
   var year            = TextEditingController();
   var duration        = TextEditingController();
 
-  @override
-  Widget build(BuildContext context) {
-    return Center (
-        child: Container (
-          height: widget._isContainerVisible ? MediaQuery.of(context).size.height *0.65 : 0.0,
-          width: widget._isContainerVisible ? MediaQuery.of(context).size.width : 0.0,
-          child: Column(
-            children: [
-              //Course Title
-              Padding(
+  return Center (
+      child: Container (
+        height: _isContainerVisible ? MediaQuery.of(context).size.height *0.65 : 0.0,
+        width: _isContainerVisible ? MediaQuery.of(context).size.width : 0.0,
+        child: Column(
+          children: [
+            //Course Title
+            Padding(
                 padding: const EdgeInsets.only(top: 15, bottom: 15),
                 child: inputText(courseTitle, '123', 'hintText')
-              ),
+            ),
 
-              //Course Topic
-              inputText(courseTitle, '123', 'hintText'),
+            //Course Topic
+            inputText(courseTitle, '123', 'hintText'),
 
-              //Name of Organization
-              Padding(
-                padding: const EdgeInsets.only(top: 15, bottom: 15),
-                child: inputText(courseTitle, '123', 'hintText'),
-              ),
+            //Name of Organization
+            Padding(
+              padding: const EdgeInsets.only(top: 15, bottom: 15),
+              child: inputText(courseTitle, '123', 'hintText'),
+            ),
 
-              //Location
-              inputText(courseTitle, '123', 'hintText'),
+            //Location
+            inputText(courseTitle, '123', 'hintText'),
 
-              //Year
-              Padding(
-                padding: const EdgeInsets.only(top: 15, bottom: 15),
-                child: inputText(courseTitle, '123', 'hintText'),
-              ),
+            //Year
+            Padding(
+              padding: const EdgeInsets.only(top: 15, bottom: 15),
+              child: inputText(courseTitle, '123', 'hintText'),
+            ),
 
-              //Duration
-              inputText(courseTitle, '123', 'hintText'),
+            //Duration
+            inputText(courseTitle, '123', 'hintText'),
 
-              const SizedBox(
-                height: 40,
-              ),
-            ],
-          ),
-        )
-    );
-  }
+            const SizedBox(
+              height: 40,
+            ),
+          ],
+        ),
+      )
+  );
 }
