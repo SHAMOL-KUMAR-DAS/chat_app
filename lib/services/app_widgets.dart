@@ -134,3 +134,20 @@ button(BuildContext context, {text, press}){
     ),
   );
 }
+
+sendButton({icon, size, action}){
+  return GestureDetector(
+    onTap: action,
+    child: Container(
+        padding: EdgeInsets.all(6.0),
+        decoration: BoxDecoration(
+            boxShadow: AppColors.softShadows,
+            color: AppColors.backgroundColor,
+            borderRadius: BorderRadius.circular(8)),
+        child: Icon(
+          icon,
+          size: size,
+          color: Colors.black54,
+        )),
+  );
+}

@@ -42,7 +42,6 @@ class AuthMethods{
         "First_Name": userDetails.displayName,
         "Mobile": userDetails.phoneNumber,
         "E-Mail": userDetails.email,
-        "User_Name": userDetails.email.toString().replaceAll("@gmail.com", ""),
         "Image": userDetails.photoURL
       };
 

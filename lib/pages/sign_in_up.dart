@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:impel/pages/all_users.dart';
 import 'package:impel/services/app_colors.dart';
-import 'package:impel/services/app_text_style.dart';
+import 'package:impel/services/auth.dart';
 import 'package:impel/services/app_widgets.dart';
 import 'package:lottie/lottie.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';

@@ -6,7 +6,7 @@ import 'package:impel/pages/all_users.dart';
 import 'package:impel/pages/sign_in_up.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:impel/services/app_colors.dart';
-import 'package:impel/services/app_text_style.dart';
+import 'package:impel/services/auth.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:impel/pages/chatpage.dart';
 import 'package:impel/pages/sign_in_up.dart';
 import 'package:impel/services/app_colors.dart';
 
@@ -10,15 +11,14 @@ class All_Users extends StatefulWidget {
   _All_UsersState createState() => _All_UsersState();
 }
 
-var fname, lname, address, gmail, imageurl, mobile;
+var fname, address, email, imageurl, mobile;
 _fetch()async{
   final firebaseUser = await FirebaseAuth.instance.currentUser!;
   if(firebaseUser!=null)
     await FirebaseFirestore.instance.collection('chat').doc(firebaseUser.uid).get().then((ds){
       fname=ds.data()!['First_Name'];
-      lname = ds.data()!['Last_Name'];
       address=ds.data()!['Address'];
-      gmail=ds.data()!['E-Mail'];
+      email=ds.data()!['E-Mail'];
       imageurl = ds.data()!['Image'];
       mobile = ds.data()!['Mobile'];
 
@@ -50,29 +50,23 @@ class _All_UsersState extends State<All_Users> {
         backgroundColor: AppColors.primaryColor,
         elevation: 0,
         automaticallyImplyLeading: false,
-        leading: GestureDetector(
-          onTap: (){
-            //Navigator.push(context, MaterialPageRoute(builder: (context)=>Login_Profile(imageurl,fname,address,gmail,mobile)));
-          },
-          child: Padding(
-            padding: const EdgeInsets.only(top: 5,left: 5),
-            child: FutureBuilder(
-              future: _fetch(),
-              builder: (context,snapshot){
-                if(snapshot.connectionState!= ConnectionState.done)
-                  return Text("",style: TextStyle(color: Colors.white),);
-                return Column(
-                  children: [
-                    CircleAvatar(
-                      radius: 22.0,
-                      backgroundImage: imageurl != '' ? NetworkImage(imageurl) : AssetImage('assets/images/blue.png') as ImageProvider
-                      //imageurl != null ? Image.network(imageurl) : Image.asset('assets/images/blue.png'),
-                    ),
+        leading: Padding(
+          padding: const EdgeInsets.only(top: 5,left: 5),
+          child: FutureBuilder(
+            future: _fetch(),
+            builder: (context,snapshot){
+              if(snapshot.connectionState!= ConnectionState.done)
+                return Text("",style: TextStyle(color: Colors.white),);
+              return Column(
+                children: [
+                  CircleAvatar(
+                    radius: 22.0,
+                    backgroundImage: imageurl != null ? NetworkImage(imageurl) : AssetImage('assets/images/logo.png') as ImageProvider
+                  ),
 
-                  ],
-                );
-              },
-            ),
+                ],
+              );
+            },
           ),
         ),
         title: Text('Messaging'),
@@ -106,13 +100,13 @@ class _All_UsersState extends State<All_Users> {
                         );
                       }
                       else {
-                        //print(document['E-Mail']);
                         return ListTile(
                           title: FlatButton(
                             onPressed: () {
                               String userid = document.id;
-                              // Navigator.push(context, MaterialPageRoute(
-                              //     builder: (context) => Chatting(userid,document['Image'],document['First_Name'],user.uid,user.email,document['E-Mail'],user.photoUrl)));
+                              Navigator.push(context, MaterialPageRoute(
+                                  builder: (context) => Chatting(myUid: userid, receiverImage: document['Image'], receiver: document['First_Name'],
+                                      receiverUid: user.uid, userEmail: email, receiverEmail: document['E-Mail'], userImage: imageurl)));
                             },
                             child: Row(
                               children: [

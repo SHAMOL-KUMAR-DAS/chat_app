@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class DataBaseUserService{
   var uid;
@@ -10,8 +9,6 @@ class DataBaseUserService{
   Future UpdateUserData(String _fname, _lname, _address, _mobile, _email) async{
     return await user.doc(uid).set({
       'First_Name': _fname,
-      'Last_Name': _lname,
-      'Address': _address,
       'Mobile': _mobile,
       'E-Mail': _email,
     });
@@ -30,16 +27,3 @@ class DatabaseMethods{
     );
   }
 }
-
-// class IndividualChatting{
-//   String uid;
-//   IndividualChatting({this.uid});
-//
-//   final CollectionReference user = Firestore.instance.collection('chat');
-//
-//   Future UpdateUserData(String _message, String _sender) async{
-//     return await user.document(uid).collection('Message').document().collection('Individual').add({
-//       'Message': _message,
-//     });
-//   }
-// }
