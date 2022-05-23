@@ -53,21 +53,18 @@ class _ChattingState extends State<Chatting> {
     Size size = MediaQuery.of(context).size;
 
     return Scaffold(
-      backgroundColor: AppColors.backgroundColor,
+      backgroundColor: AppColors.white,
       appBar: AppBar(
         backgroundColor: AppColors.primaryColor,
 
         title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
+            Text(widget.receiver),
             CircleAvatar(
               radius: 20.0,
               backgroundImage: widget.receiverImage != null ? NetworkImage(widget.receiverImage) : AssetImage('assets/images/logo.png') as ImageProvider,
             ),
-            SizedBox(
-              width: size.width * 0.02,
-            ),
-            Text(widget.receiver),
           ],
         ),
 
@@ -135,11 +132,11 @@ class _ChattingState extends State<Chatting> {
 
         Row(
           children: [
-            //ButtonIcon(icon: Icons.image,size: 18,),
             SizedBox(width: 10.0),
             Expanded(
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 10.0),
+                padding: EdgeInsets.only(left: 12, bottom: 3, top: 3,),
+                margin: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                 decoration: BoxDecoration(
                     color: AppColors.backgroundColor,
                     boxShadow: AppColors.softShadowsInvert,
@@ -175,7 +172,6 @@ class _ChattingState extends State<Chatting> {
                 }).then((value) => _message.text = '');
               },
             ),
-            SizedBox(height: 10.0,)
           ],
         ),
       ]),

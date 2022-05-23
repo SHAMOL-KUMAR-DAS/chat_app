@@ -111,7 +111,7 @@ class _SignInUpState extends State<SignInUp> {
   Widget build(BuildContext context) {
     return status ? Scaffold (
       body: Container(
-        padding: EdgeInsets.only(left: 15, right: 15, bottom: 15),
+        padding: EdgeInsets.only(left: 15, right: 15, bottom: 0),
         child: _isContainerVisible ?
         Sign_Up(context, _isContainerVisible)
             :

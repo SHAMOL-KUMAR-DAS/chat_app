@@ -140,6 +140,7 @@ sendButton({icon, size, action}){
     onTap: action,
     child: Container(
         padding: EdgeInsets.all(6.0),
+        margin: EdgeInsets.only(right: 15),
         decoration: BoxDecoration(
             boxShadow: AppColors.softShadows,
             color: AppColors.backgroundColor,

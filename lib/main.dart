@@ -81,7 +81,7 @@ class MyApp extends StatelessWidget {
                mainAxisAlignment: MainAxisAlignment.end,
                mainAxisSize: MainAxisSize.min,
                children: const [
-                 Padding(padding: EdgeInsets.only(bottom: 30.0),child:Text("Welcome To Chatty",style: AppColors.buttonStyle)),
+                 Padding(padding: EdgeInsets.only(bottom: 30.0),child:Text("Welcome To Chatty",style: TextStyle(color: AppColors.primaryColor,fontSize: 18,fontWeight: FontWeight.w800))),
 
                ],),
              Column(

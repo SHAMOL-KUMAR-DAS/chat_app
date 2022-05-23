@@ -11,24 +11,24 @@ class All_Users extends StatefulWidget {
   _All_UsersState createState() => _All_UsersState();
 }
 
-var fname, address, email, imageurl, mobile;
-_fetch()async{
-  final firebaseUser = await FirebaseAuth.instance.currentUser!;
-  if(firebaseUser!=null)
-    await FirebaseFirestore.instance.collection('chat').doc(firebaseUser.uid).get().then((ds){
-      fname=ds.data()!['First_Name'];
-      address=ds.data()!['Address'];
-      email=ds.data()!['E-Mail'];
-      imageurl = ds.data()!['Image'];
-      mobile = ds.data()!['Mobile'];
-
-    }).catchError((e){
-      print(e);
-    });
-}
-
 class _All_UsersState extends State<All_Users> {
   var user;
+  var fname, address, email, imageurl, mobile;
+
+  _fetch()async{
+    final firebaseUser = await FirebaseAuth.instance.currentUser!;
+    if(firebaseUser!=null)
+      await FirebaseFirestore.instance.collection('chat').doc(firebaseUser.uid).get().then((ds){
+        fname=ds.data()!['First_Name'];
+        address=ds.data()!['Address'];
+        email=ds.data()!['E-Mail'];
+        imageurl = ds.data()!['Image'];
+        mobile = ds.data()!['Mobile'];
+      }).catchError((e){
+        print(e);
+      });
+  }
+
   Future<void> getUserData() async {
     var userData = await FirebaseAuth.instance.currentUser!;
     setState(() {
@@ -69,7 +69,7 @@ class _All_UsersState extends State<All_Users> {
             },
           ),
         ),
-        title: Text('Messaging'),
+        title: Text('Chatty'),
         centerTitle: true,
         actions: [
           FlatButton(
@@ -83,6 +83,7 @@ class _All_UsersState extends State<All_Users> {
           builder:
               (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
             if (!snapshot.hasData) {
+
               return Text(
                 'Loading...',
                 style: TextStyle(color: Colors.white),
@@ -101,42 +102,24 @@ class _All_UsersState extends State<All_Users> {
                       }
                       else {
                         return ListTile(
-                          title: FlatButton(
-                            onPressed: () {
-                              String userid = document.id;
-                              Navigator.push(context, MaterialPageRoute(
-                                  builder: (context) => Chatting(myUid: userid, receiverImage: document['Image'], receiver: document['First_Name'],
-                                      receiverUid: user.uid, userEmail: email, receiverEmail: document['E-Mail'], userImage: imageurl)));
-                            },
-                            child: Row(
-                              children: [
-                                CircleAvatar(
-                                  radius: 20.0,
-                                  backgroundImage: NetworkImage(
-                                      document['Image'] ?? ""
-                                  ),
-                                ),
-
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 10, right: 5),
-                                  child: Text(
-                                    document['First_Name'] ?? '',
-                                    style: TextStyle(color: Colors.black,
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w500),
-                                  ),
-                                ),
-
-                                Text(
-                                  document['Last_Name'] ?? '',
-                                  style: TextStyle(color: Colors.black,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w500),
-                                ),
-                              ],
+                          leading:  CircleAvatar(
+                            radius: 20.0,
+                            backgroundImage: NetworkImage(
+                                document['Image'] ?? ""
                             ),
                           ),
-
+                          title: Text(
+                            document['First_Name'] ?? '',
+                            style: TextStyle(color: Colors.black,
+                                fontSize: 20,
+                                fontWeight: FontWeight.w500),
+                          ),
+                          onTap: (){
+                            String userId = document.id;
+                            Navigator.push(context, MaterialPageRoute(
+                                builder: (context) => Chatting(myUid: userId, receiverImage: document['Image'], receiver: document['First_Name'],
+                                    receiverUid: user.uid, userEmail: email, receiverEmail: document['E-Mail'], userImage: imageurl)));
+                          },
                         );
                       }
                     }).toList());
